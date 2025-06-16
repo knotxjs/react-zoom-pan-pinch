@@ -1,6 +1,6 @@
 {
-  "name": "react-zoom-pan-pinch",
-  "version": "0.0.0",
+  "name": "@knotx/react-zoom-pan-pinch",
+  "version": "0.0.1",
   "description": "Zoom and pan html elements in easy way",
   "author": "prc5",
   "license": "MIT",
@@ -11,6 +11,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "rollup -c",
     "build:docs": "build-storybook",
@@ -25,8 +28,8 @@
     "release": "yarn semantic-release"
   },
   "peerDependencies": {
-    "react": "*",
-    "react-dom": "*"
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
