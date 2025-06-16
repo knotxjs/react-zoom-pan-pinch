@@ -20,6 +20,8 @@ export const initialSetup: LibrarySetup = {
   minScale: 1,
   maxScale: 8,
   limitToBounds: true,
+  singleAxisMode: false,
+  allowOverscroll: true,
   centerZoomedOut: false,
   centerOnInit: false,
   disablePadding: false,

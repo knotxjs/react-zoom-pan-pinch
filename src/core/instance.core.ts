@@ -246,7 +246,8 @@ export class ZoomPanPinch {
   /// ///////
 
   onWheelPanning = (event: WheelEvent): void => {
-    const { disabled, wheel, panning } = this.setup;
+    const { disabled, wheel, panning, singleAxisMode, allowOverscroll } =
+      this.setup;
     if (
       !this.wrapperComponent ||
       !this.contentComponent ||
@@ -259,12 +260,42 @@ export class ZoomPanPinch {
       return;
     }
 
-    event.preventDefault();
-    event.stopPropagation();
+    let { deltaX, deltaY } = event;
+    let overallScroll = false;
+
+    if (singleAxisMode) {
+      const isHorizontal = Math.abs(deltaX) > Math.abs(deltaY);
+      deltaX = isHorizontal ? deltaX : 0;
+      deltaY = isHorizontal ? 0 : deltaY;
+
+      if (allowOverscroll && this.bounds) {
+        const { maxPositionX, minPositionX, maxPositionY, minPositionY } =
+          this.bounds;
+        const isHorizontalBound = maxPositionX !== minPositionX;
+        const isVerticalBount = maxPositionY !== minPositionY;
+        const { positionX, positionY } = this.transformState;
+
+        overallScroll =
+          (deltaX > 0 && isHorizontalBound && positionX <= minPositionX) ||
+          (deltaX < 0 && isHorizontalBound && positionX >= maxPositionX) ||
+          (deltaY > 0 && isVerticalBount && positionY <= minPositionY) ||
+          (deltaY < 0 && isVerticalBount && positionY >= maxPositionY);
+
+        if (overallScroll) {
+          deltaX = 0;
+          deltaY = 0;
+        }
+      }
+    }
+
+    if (!overallScroll) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
 
     const { positionX, positionY } = this.transformState;
-    const mouseX = positionX - event.deltaX;
-    const mouseY = positionY - event.deltaY;
+    const mouseX = positionX - deltaX;
+    const mouseY = positionY - deltaY;
     const newPositionX = panning.lockAxisX ? positionX : mouseX;
     const newPositionY = panning.lockAxisY ? positionY : mouseY;
 

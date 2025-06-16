@@ -62,6 +62,8 @@ export type ReactZoomPanPinchProps = {
   minScale?: number;
   maxScale?: number;
   limitToBounds?: boolean;
+  singleAxisMode?: boolean;
+  allowOverscroll?: boolean;
   centerZoomedOut?: boolean;
   centerOnInit?: boolean;
   disablePadding?: boolean;
