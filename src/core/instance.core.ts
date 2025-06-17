@@ -269,17 +269,14 @@ export class ZoomPanPinch {
       deltaY = isHorizontal ? 0 : deltaY;
 
       if (allowOverscroll && this.bounds) {
-        const { maxPositionX, minPositionX, maxPositionY, minPositionY } =
-          this.bounds;
-        const isHorizontalBound = maxPositionX !== minPositionX;
-        const isVerticalBount = maxPositionY !== minPositionY;
+        const { maxPositionX, minPositionX, maxPositionY, minPositionY } = this.bounds;
         const { positionX, positionY } = this.transformState;
 
         overallScroll =
-          (deltaX > 0 && isHorizontalBound && positionX <= minPositionX) ||
-          (deltaX < 0 && isHorizontalBound && positionX >= maxPositionX) ||
-          (deltaY > 0 && isVerticalBount && positionY <= minPositionY) ||
-          (deltaY < 0 && isVerticalBount && positionY >= maxPositionY);
+          (deltaX > 0 && positionX <= minPositionX) ||
+          (deltaX < 0 && positionX >= maxPositionX) ||
+          (deltaY > 0 && positionY <= minPositionY) ||
+          (deltaY < 0 && positionY >= maxPositionY);
 
         if (overallScroll) {
           deltaX = 0;
