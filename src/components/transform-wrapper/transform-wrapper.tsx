@@ -24,7 +24,7 @@ export const TransformWrapper = React.forwardRef(
     props: Omit<ReactZoomPanPinchProps, "ref">,
     ref: React.Ref<ReactZoomPanPinchContentRef>,
   ) => {
-    const instance = useRef(new ZoomPanPinch(props)).current;
+    const instance = useRef(props.initialInstance ?? new ZoomPanPinch(props)).current;
 
     const content = getContent(props.children, getControls(instance));
 

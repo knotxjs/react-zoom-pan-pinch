@@ -296,19 +296,7 @@ export class ZoomPanPinch {
     const newPositionX = panning.lockAxisX ? positionX : mouseX;
     const newPositionY = panning.lockAxisY ? positionY : mouseY;
 
-    const { sizeX, sizeY } = this.setup.alignmentAnimation;
-    const paddingValueX = getPaddingValue(this, sizeX);
-    const paddingValueY = getPaddingValue(this, sizeY);
-
-    if (newPositionX === positionX && newPositionY === positionY) return;
-
-    handleNewPosition(
-      this,
-      newPositionX,
-      newPositionY,
-      paddingValueX,
-      paddingValueY,
-    );
+    this.calcNewPosition(newPositionX, newPositionY);
   };
 
   onPanningStart = (event: MouseEvent): void => {
@@ -512,6 +500,24 @@ export class ZoomPanPinch {
     }
     return Boolean(keys.find((key) => this.pressedKeys[key]));
   };
+
+  calcNewPosition(newPositionX: number, newPositionY: number) {
+    const { positionX, positionY } = this.transformState;
+
+    const { sizeX, sizeY } = this.setup.alignmentAnimation;
+    const paddingValueX = getPaddingValue(this, sizeX);
+    const paddingValueY = getPaddingValue(this, sizeY);
+
+    if (newPositionX === positionX && newPositionY === positionY) return;
+
+    handleNewPosition(
+      this,
+      newPositionX,
+      newPositionY,
+      paddingValueX,
+      paddingValueY,
+    );
+  }
 
   setTransformState = (
     scale: number,
