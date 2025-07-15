@@ -7,6 +7,7 @@ import {
   ReactZoomPanPinchProps,
   ReactZoomPanPinchState,
   ReactZoomPanPinchRef,
+  SizeType,
 } from "../models";
 import {
   getContext,
@@ -269,7 +270,8 @@ export class ZoomPanPinch {
       deltaY = isHorizontal ? 0 : deltaY;
 
       if (allowOverscroll && this.bounds) {
-        const { maxPositionX, minPositionX, maxPositionY, minPositionY } = this.bounds;
+        const { maxPositionX, minPositionX, maxPositionY, minPositionY } =
+          this.bounds;
         const { positionX, positionY } = this.transformState;
 
         overallScroll =
@@ -501,7 +503,11 @@ export class ZoomPanPinch {
     return Boolean(keys.find((key) => this.pressedKeys[key]));
   };
 
-  calcNewPosition(newPositionX: number, newPositionY: number) {
+  calcNewPosition(
+    newPositionX: number,
+    newPositionY: number,
+    wrapperSize?: SizeType,
+  ) {
     const { positionX, positionY } = this.transformState;
 
     const { sizeX, sizeY } = this.setup.alignmentAnimation;
@@ -516,8 +522,32 @@ export class ZoomPanPinch {
       newPositionY,
       paddingValueX,
       paddingValueY,
+      wrapperSize,
     );
   }
+
+  /**
+   * before init set transform state to avoid the first render jank
+   */
+  presetTransformStateBeforeInit = ({
+    wrapperSize,
+    contentSize,
+    positionX,
+    positionY,
+  }: {
+    wrapperSize: SizeType;
+    contentSize: SizeType;
+    positionX: number;
+    positionY: number;
+  }) => {
+    handleCalculateBounds(
+      this,
+      this.transformState.scale,
+      wrapperSize,
+      contentSize,
+    );
+    this.calcNewPosition(positionX, positionY, wrapperSize);
+  };
 
   setTransformState = (
     scale: number,

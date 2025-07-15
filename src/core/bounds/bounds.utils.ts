@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { roundNumber } from "../../utils";
 import {
+  SizeType,
   BoundsType,
   PositionType,
   ReactZoomPanPinchContext,
@@ -8,15 +9,15 @@ import {
 import { ComponentsSizesType } from "./bounds.types";
 
 export function getComponentsSizes(
-  wrapperComponent: HTMLDivElement,
-  contentComponent: HTMLDivElement,
+  wrapperComponent: SizeType,
+  contentComponent: SizeType,
   newScale: number,
 ): ComponentsSizesType {
-  const wrapperWidth = wrapperComponent.offsetWidth;
-  const wrapperHeight = wrapperComponent.offsetHeight;
+  const wrapperWidth = wrapperComponent.width;
+  const wrapperHeight = wrapperComponent.height;
 
-  const contentWidth = contentComponent.offsetWidth;
-  const contentHeight = contentComponent.offsetHeight;
+  const contentWidth = contentComponent.width;
+  const contentHeight = contentComponent.height;
 
   const newContentWidth = contentWidth * newScale;
   const newContentHeight = contentHeight * newScale;
@@ -62,11 +63,27 @@ export const getBounds = (
 export const calculateBounds = (
   contextInstance: ReactZoomPanPinchContext,
   newScale: number,
+  wrapperSize?: SizeType,
+  contentSize?: SizeType,
 ): BoundsType => {
   const { wrapperComponent, contentComponent } = contextInstance;
   const { centerZoomedOut } = contextInstance.setup;
 
-  if (!wrapperComponent || !contentComponent) {
+  if (!wrapperSize && wrapperComponent) {
+    wrapperSize = {
+      width: wrapperComponent.offsetWidth,
+      height: wrapperComponent.offsetHeight,
+    };
+  }
+
+  if (!contentSize && contentComponent) {
+    contentSize = {
+      width: contentComponent.offsetWidth,
+      height: contentComponent.offsetHeight,
+    };
+  }
+
+  if (!wrapperSize || !contentSize) {
     throw new Error("Components are not mounted");
   }
 
@@ -77,7 +94,7 @@ export const calculateBounds = (
     newDiffWidth,
     newContentHeight,
     newDiffHeight,
-  } = getComponentsSizes(wrapperComponent, contentComponent, newScale);
+  } = getComponentsSizes(wrapperSize, contentSize, newScale);
 
   const bounds = getBounds(
     wrapperWidth,
@@ -143,8 +160,15 @@ export const boundLimiter = (
 export const handleCalculateBounds = (
   contextInstance: ReactZoomPanPinchContext,
   newScale: number,
+  wrapperSize?: SizeType,
+  contentSize?: SizeType,
 ): BoundsType => {
-  const bounds = calculateBounds(contextInstance, newScale);
+  const bounds = calculateBounds(
+    contextInstance,
+    newScale,
+    wrapperSize,
+    contentSize,
+  );
 
   // Save bounds
   contextInstance.bounds = bounds;
@@ -158,14 +182,14 @@ export function getMouseBoundedPosition(
   limitToBounds: boolean,
   paddingValueX: number,
   paddingValueY: number,
-  wrapperComponent: HTMLDivElement | null,
+  wrapper: SizeType | HTMLDivElement | null,
 ): PositionType {
   const { minPositionX, minPositionY, maxPositionX, maxPositionY } = bounds;
 
   let paddingX = 0;
   let paddingY = 0;
 
-  if (wrapperComponent) {
+  if (wrapper) {
     paddingX = paddingValueX;
     paddingY = paddingValueY;
   }
