@@ -212,7 +212,7 @@ export class ZoomPanPinch {
         } else {
           handleCancelAnimation(this);
           handleCalculateBounds(this, this.transformState.scale);
-          handleAlignToBounds(this, 0);
+          handleAlignToBounds(this, 0, true);
         }
       }
     });

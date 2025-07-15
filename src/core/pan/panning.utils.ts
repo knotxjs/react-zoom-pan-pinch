@@ -87,12 +87,13 @@ export const handleTouchPanningSetup = (
 };
 export function handlePanToBounds(
   contextInstance: ReactZoomPanPinchContext,
+  ignoreDisabled?: boolean,
 ): Omit<ReactZoomPanPinchState, "previousScale"> | undefined {
   const { positionX, positionY, scale } = contextInstance.transformState;
   const { disabled, limitToBounds, centerZoomedOut } = contextInstance.setup;
   const { wrapperComponent } = contextInstance;
 
-  if (disabled || !wrapperComponent || !contextInstance.bounds) return;
+  if ((disabled && !ignoreDisabled) || !wrapperComponent || !contextInstance.bounds) return;
 
   const { maxPositionX, minPositionX, maxPositionY, minPositionY } =
     contextInstance.bounds;
