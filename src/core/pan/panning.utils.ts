@@ -3,6 +3,7 @@ import {
   PositionType,
   ReactZoomPanPinchContext,
   ReactZoomPanPinchState,
+  SizeType,
 } from "../../models";
 import { isExcludedNode } from "../../utils";
 import { getMouseBoundedPosition } from "../bounds/bounds.utils";
@@ -64,7 +65,7 @@ export const handlePanningSetup = (
   const y = event.clientY;
 
   contextInstance.startCoords = { x: x - positionX, y: y - positionY };
-  contextInstance.clientCoords = {x: x, y:  y};
+  contextInstance.clientCoords = { x, y };
 };
 
 export const handleTouchPanningSetup = (
@@ -82,17 +83,23 @@ export const handleTouchPanningSetup = (
     const x = touches[0].clientX;
     const y = touches[0].clientY;
     contextInstance.startCoords = { x: x - positionX, y: y - positionY };
-    contextInstance.clientCoords = {x: x, y:  y};
+    contextInstance.clientCoords = { x, y };
   }
 };
 export function handlePanToBounds(
   contextInstance: ReactZoomPanPinchContext,
+  ignoreDisabled?: boolean,
 ): Omit<ReactZoomPanPinchState, "previousScale"> | undefined {
   const { positionX, positionY, scale } = contextInstance.transformState;
   const { disabled, limitToBounds, centerZoomedOut } = contextInstance.setup;
   const { wrapperComponent } = contextInstance;
 
-  if (disabled || !wrapperComponent || !contextInstance.bounds) return;
+  if (
+    (disabled && !ignoreDisabled) ||
+    !wrapperComponent ||
+    !contextInstance.bounds
+  )
+    return;
 
   const { maxPositionX, minPositionX, maxPositionY, minPositionY } =
     contextInstance.bounds;
@@ -144,13 +151,16 @@ export function handleNewPosition(
   newPositionY: number,
   paddingValueX: number,
   paddingValueY: number,
+  wrapperSize?: SizeType,
 ): void {
   const { limitToBounds } = contextInstance.setup;
   const { wrapperComponent, bounds } = contextInstance;
   const { scale, positionX, positionY } = contextInstance.transformState;
 
+  const wrapper = wrapperSize || wrapperComponent;
+
   if (
-    wrapperComponent === null ||
+    wrapper === null ||
     bounds === null ||
     (newPositionX === positionX && newPositionY === positionY)
   ) {
@@ -164,7 +174,7 @@ export function handleNewPosition(
     limitToBounds,
     paddingValueX,
     paddingValueY,
-    wrapperComponent,
+    wrapper,
   );
 
   contextInstance.setTransformState(scale, x, y);

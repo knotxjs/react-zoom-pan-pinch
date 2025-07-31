@@ -1,6 +1,6 @@
 {
   "name": "@knotx/react-zoom-pan-pinch",
-  "version": "3.9.8",
+  "version": "3.9.12",
   "description": "Zoom and pan html elements in easy way",
   "author": "prc5",
   "license": "MIT",
@@ -83,8 +83,8 @@
     "jest-extended": "^3.2.0",
     "postcss": "^8.2.13",
     "prism-react-renderer": "^1.2.1",
-    "react": "*",
-    "react-dom": "*",
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0",
     "react-scripts": "5.0.1",
     "resize-observer-polyfill": "^1.5.1",
     "rollup": "^2.46.0",

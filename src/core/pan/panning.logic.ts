@@ -33,6 +33,7 @@ export function handlePanningStart(
 export function handleAlignToBounds(
   contextInstance: ReactZoomPanPinchContext,
   customAnimationTime?: number,
+  ignoreDisabled?: boolean,
 ): void {
   const { scale } = contextInstance.transformState;
   const { minScale, alignmentAnimation } = contextInstance.setup;
@@ -41,9 +42,9 @@ export function handleAlignToBounds(
 
   const isDisabled = disabled || scale < minScale || (!sizeX && !sizeY);
 
-  if (isDisabled) return;
+  if (isDisabled && !ignoreDisabled) return;
 
-  const targetState = handlePanToBounds(contextInstance);
+  const targetState = handlePanToBounds(contextInstance, ignoreDisabled);
 
   if (targetState) {
     animate(

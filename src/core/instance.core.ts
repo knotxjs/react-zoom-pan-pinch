@@ -7,6 +7,7 @@ import {
   ReactZoomPanPinchProps,
   ReactZoomPanPinchState,
   ReactZoomPanPinchRef,
+  SizeType,
 } from "../models";
 import {
   getContext,
@@ -212,7 +213,7 @@ export class ZoomPanPinch {
         } else {
           handleCancelAnimation(this);
           handleCalculateBounds(this, this.transformState.scale);
-          handleAlignToBounds(this, 0);
+          handleAlignToBounds(this, 0, true);
         }
       }
     });
@@ -269,7 +270,8 @@ export class ZoomPanPinch {
       deltaY = isHorizontal ? 0 : deltaY;
 
       if (allowOverscroll && this.bounds) {
-        const { maxPositionX, minPositionX, maxPositionY, minPositionY } = this.bounds;
+        const { maxPositionX, minPositionX, maxPositionY, minPositionY } =
+          this.bounds;
         const { positionX, positionY } = this.transformState;
 
         overallScroll =
@@ -296,19 +298,7 @@ export class ZoomPanPinch {
     const newPositionX = panning.lockAxisX ? positionX : mouseX;
     const newPositionY = panning.lockAxisY ? positionY : mouseY;
 
-    const { sizeX, sizeY } = this.setup.alignmentAnimation;
-    const paddingValueX = getPaddingValue(this, sizeX);
-    const paddingValueY = getPaddingValue(this, sizeY);
-
-    if (newPositionX === positionX && newPositionY === positionY) return;
-
-    handleNewPosition(
-      this,
-      newPositionX,
-      newPositionY,
-      paddingValueX,
-      paddingValueY,
-    );
+    this.calcNewPosition(newPositionX, newPositionY);
   };
 
   onPanningStart = (event: MouseEvent): void => {
@@ -511,6 +501,52 @@ export class ZoomPanPinch {
       return true;
     }
     return Boolean(keys.find((key) => this.pressedKeys[key]));
+  };
+
+  calcNewPosition(
+    newPositionX: number,
+    newPositionY: number,
+    wrapperSize?: SizeType,
+  ) {
+    const { positionX, positionY } = this.transformState;
+
+    const { sizeX, sizeY } = this.setup.alignmentAnimation;
+    const paddingValueX = getPaddingValue(this, sizeX);
+    const paddingValueY = getPaddingValue(this, sizeY);
+
+    if (newPositionX === positionX && newPositionY === positionY) return;
+
+    handleNewPosition(
+      this,
+      newPositionX,
+      newPositionY,
+      paddingValueX,
+      paddingValueY,
+      wrapperSize,
+    );
+  }
+
+  /**
+   * before init set transform state to avoid the first render jank
+   */
+  presetTransformStateBeforeInit = ({
+    wrapperSize,
+    contentSize,
+    positionX,
+    positionY,
+  }: {
+    wrapperSize: SizeType;
+    contentSize: SizeType;
+    positionX: number;
+    positionY: number;
+  }) => {
+    handleCalculateBounds(
+      this,
+      this.transformState.scale,
+      wrapperSize,
+      contentSize,
+    );
+    this.calcNewPosition(positionX, positionY, wrapperSize);
   };
 
   setTransformState = (
