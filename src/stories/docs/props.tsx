@@ -13,7 +13,7 @@ export type ControlsOptionsType = {
 };
 
 export type ComponentProps = Record<
-  keyof Omit<ReactZoomPanPinchProps, "children">,
+  keyof Omit<ReactZoomPanPinchProps, "initialInstance" | "children">,
   | Omit<ControlsOptionsType, "name" | "isObjectRow">
   | Record<string, Omit<ControlsOptionsType, "name" | "isObjectRow">>
 >;
@@ -140,6 +140,16 @@ export const wrapperPropsTable: ComponentProps = {
     defaultValue: String(initialSetup.limitToBounds),
     description:
       "Prop used to block panning/zooming outside of the scaled element, so the library will always keep it inside the wrapper view.",
+  },
+  singleAxisMode: {
+    type: ["boolean"],
+    defaultValue: String(initialSetup.singleAxisMode),
+    description: "Scale used only as initial value.",
+  },
+  allowOverscroll: {
+    type: ["boolean"],
+    defaultValue: String(initialSetup.allowOverscroll),
+    description: "Allows to overscroll the content area. ",
   },
   centerZoomedOut: {
     type: ["boolean"],

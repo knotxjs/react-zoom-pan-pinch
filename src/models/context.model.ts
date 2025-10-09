@@ -172,6 +172,7 @@ export type LibrarySetup = Pick<
     Omit<
       ReactZoomPanPinchProps,
       | "ref"
+      | "initialInstance"
       | "initialScale"
       | "initialPositionX"
       | "initialPositionY"

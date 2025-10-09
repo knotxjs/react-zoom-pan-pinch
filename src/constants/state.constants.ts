@@ -70,6 +70,7 @@ export const initialSetup: LibrarySetup = {
     disabled: false,
     sizeX: 100,
     sizeY: 100,
+    awaitDuringAnimation: false,
     animationTime: 200,
     velocityAlignmentTime: 400,
     animationType: "easeOut",
