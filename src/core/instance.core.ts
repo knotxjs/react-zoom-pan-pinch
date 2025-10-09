@@ -18,7 +18,10 @@ import {
   makePassiveEventOption,
   getCenterPosition,
 } from "../utils";
-import { handleCancelAnimation } from "./animations/animations.utils";
+import {
+  awaitAnimationEnd,
+  handleCancelAnimation,
+} from "./animations/animations.utils";
 import { isWheelAllowed } from "./wheel/wheel.utils";
 import { isPinchAllowed, isPinchStartAllowed } from "./pinch/pinch.utils";
 import { handleCalculateBounds } from "./bounds/bounds.utils";
@@ -97,6 +100,7 @@ export class ZoomPanPinch {
   public lastMousePosition: PositionType | null = null;
   // animations helpers
   public animate = false;
+  public animationEndCallbacks = new Set<() => void>();
   public animation: AnimationType | null = null;
   public maxBounds: BoundsType | null = null;
   // key press
@@ -180,8 +184,9 @@ export class ZoomPanPinch {
     contentComponent: HTMLDivElement,
   ): void => {
     let isCentered = false;
+    let alignAction: (() => void) | undefined;
 
-    const { centerOnInit } = this.setup;
+    const { centerOnInit, alignmentAnimation } = this.setup;
 
     const hasTarget = (entries: ResizeObserverEntry[], target: Element) => {
       // eslint-disable-next-line no-restricted-syntax
@@ -210,6 +215,16 @@ export class ZoomPanPinch {
 
             this.setCenter();
           }
+        } else if (alignmentAnimation.awaitDuringAnimation) {
+          alignAction = () => {
+            handleCalculateBounds(this, this.transformState.scale);
+            handleAlignToBounds(this, 0, true);
+          };
+
+          awaitAnimationEnd(this).then(() => {
+            alignAction?.();
+            alignAction = undefined;
+          });
         } else {
           handleCancelAnimation(this);
           handleCalculateBounds(this, this.transformState.scale);

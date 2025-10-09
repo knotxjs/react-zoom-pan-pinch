@@ -12,6 +12,18 @@ const handleCancelAnimationFrame = (animation: AnimationType | null) => {
   }
 };
 
+export const awaitAnimationEnd = (
+  contextInstance: ReactZoomPanPinchContext,
+): Promise<void> => {
+  if (!contextInstance.animation) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve) => {
+    contextInstance.animationEndCallbacks.add(resolve);
+  });
+};
+
 export const handleCancelAnimation = (
   contextInstance: ReactZoomPanPinchContext,
 ): void => {
@@ -51,6 +63,8 @@ export function handleSetupAnimation(
     if (frameTime >= animationTime) {
       callback(lastStep);
       contextInstance.animation = null;
+      contextInstance.animationEndCallbacks.forEach((cb) => cb());
+      contextInstance.animationEndCallbacks.clear();
     } else if (contextInstance.animation) {
       callback(step);
       requestAnimationFrame(contextInstance.animation);
